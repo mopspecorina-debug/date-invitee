@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя 💖</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #ffd1dc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* 💖 фон */
+body::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("hearts.png");
+  background-size: cover;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.container {
+  z-index: 2;
+  position: relative;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* 🦝 енот */
+.raccoon img {
+  width: 100px;
+  transition: transform 0.3s ease;
+}
+
+/* кнопки */
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.yes {
+  background: #ff4d6d;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.no {
+  background: white;
+  position: absolute;
+  transition: all 0.5s ease;
+}
+
+/* сердечки при клике */
+.heart {
+  position: absolute;
+  font-size: 18px;
+  animation: rise 4s linear forwards;
+}
+
+@keyframes rise {
+  to {
+    transform: translateY(-700px);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 🦝 ЕНОТ -->
+  <div class="raccoon" id="raccoon">
+    <img src="raccoon.gif">
+  </div>
+
+  <h1 id="question">Пойдёшь со мной на свидание? 💖</h1>
+
+  <button class="yes" onclick="nextStep()">Да</button>
+  <button class="no" id="noBtn">Нет</button>
+
+</div>
+
+<!-- 🎵 музыка -->
+<audio id="audio" autoplay loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const questions = [
+  {text:"Пойдёшь со мной на свидание? 💖", yes:"Да", no:"Нет"},
+  {text:"Зайдёшь за мной? 😉", yes:"Обязательно", no:"Не-а"},
+  {text:"Кушац планируется? 🍝", yes:"Без этого никак", no:"На диете"},
+  {text:"Я так и знала 😏 Жду тебя!"}
+];
+
+let step = 0;
+
+const q = document.getElementById("question");
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.querySelector(".yes");
+const raccoon = document.getElementById("raccoon");
+
+// ❌ кнопка "Нет" плавно убегает
+document.addEventListener("mousemove", moveNo);
+document.addEventListener("touchstart", moveNo);
+
+function moveNo(e) {
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const y = e.touches ? e.touches[0].clientY : e.clientY;
+
+  const rect = noBtn.getBoundingClientRect();
+
+  if (Math.abs(x - rect.left) < 80 && Math.abs(y - rect.top) < 50) {
+    noBtn.style.left = Math.random() * (window.innerWidth - 120) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 60) + "px";
+  }
+}
+
+// 💖 логика
+function nextStep() {
+
+  step++;
+
+  // 📳 вибрация
+  if (navigator.vibrate) {
+    navigator.vibrate(200);
+  }
+
+  // 🦝 реакция енота
+  raccoon.style.transform = "scale(1.2) rotate(-5deg)";
+  setTimeout(() => {
+    raccoon.style.transform = "scale(1) rotate(0deg)";
+  }, 300);
+
+  if (step >= questions.length - 1) {
+    q.innerText = questions[step].text;
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+    return;
+  }
+
+  q.innerText = questions[step].text;
+  yesBtn.innerText = questions[step].yes;
+  noBtn.innerText = questions[step].no;
+
+  yesBtn.style.transform = "scale(" + (1 + step*0.2) + ")";
+}
+
+// 💖 сердечки при клике
+document.addEventListener("click", (e) => {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerText = "💖";
+  heart.style.left = e.clientX + "px";
+  heart.style.top = e.clientY + "px";
+
+  document.body.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 4000);
+});
+</script>
+
+</body>
+</html>
